@@ -10,7 +10,7 @@ $sum = $power = 0;
 foreach ($inputLines as $gameData) {
     $game = [
         'fits' => true,
-        'id' => substr($gameData,4, strpos($gameData,':') - 4),
+        'id' => substr($gameData, 4, strpos($gameData,':') - 4),
         'maxConfig' => new ColorSet(0, 0, 0)
     ];
 

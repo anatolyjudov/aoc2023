@@ -1,3 +1,3 @@
 # Advent of code 2023
 
-This is my solutions to the 2023th Advent of code.
+These are my solutions to the 2023-th Advent of Code.
