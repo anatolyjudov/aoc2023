@@ -33,7 +33,7 @@ for ($y = 0; $y < sizeof($inputLines); $y++) {
     }
 }
 
-foreach ($numbers as $numberId => $number) {
+foreach ($numbers as $n => $number) {
     $symbolFound = false;
 
     for($y = $number['y'] - 1; $y <= $number['y'] + 1; $y++) {
@@ -42,10 +42,10 @@ foreach ($numbers as $numberId => $number) {
 
             if (isset($symbols[$y][$x])) {
                 $symbolFound = true;
-            } else continue;
 
-            if (($symbols[$y][$x] === '*') && !isset($gears["$y:$x"][$numberId])) {
-                $gears["$y:$x"][$numberId] = $number['value'];
+                if ($symbols[$y][$x] === '*' && !isset($gears["$y:$x"][$n])) {
+                    $gears["$y:$x"][$n] = $number['value'];
+                }
             }
         }
     }
