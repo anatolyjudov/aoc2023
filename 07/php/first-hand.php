@@ -5,11 +5,10 @@ $inputLines = file('input.txt', FILE_IGNORE_NEW_LINES);
 $games = [];
 
 foreach ($inputLines as $game) {
-    $hand = substr($game, 0, 5);
-    $str = str_replace(["A","K","Q","J","T"], [">","=","<",";",":"], $hand);
+    $str = str_replace(["A","K","Q","J","T"], [">","=","<",";",":"], substr($game, 0, 5));
 
     $cards = [];
-    foreach (str_split($hand) as $card) {
+    foreach (str_split($str) as $card) {
         $cards[$card] = isset($cards[$card]) ? $cards[$card] + 1 : 1;
     }
     arsort($cards, SORT_NUMERIC);
