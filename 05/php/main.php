@@ -45,11 +45,14 @@ echo 'Part 1: ' . $lowest . "\r\n";
 $t0 = hrtime(true);
 $lowest = false;
 
+$tests = 0;
+
 for($s = 0; $s < sizeof($seeds); $s += 2) {
     $shift = 0;
 
     while($shift < $seeds[$s + 1]) {
         $skip = $recipe->resolveFromSe($seeds[$s] + $shift, $seeds[$s + 1]);
+        $tests++;
 
         if ($lowest === false || $recipe->get('location') < $lowest) {
             $lowest = $recipe->get('location');
@@ -60,3 +63,4 @@ for($s = 0; $s < sizeof($seeds); $s += 2) {
 }
 
 echo 'Part 1: ' . $lowest . ', time: ' . (hrtime(true) - $t0) . " ns\r\n";
+echo $tests;
