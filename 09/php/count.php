@@ -3,20 +3,20 @@
 $inputLines = file('input.txt', FILE_IGNORE_NEW_LINES);
 
 $sum1 = $sum2 =  0;
+
 foreach ($inputLines as $line) {
     $seq = explode(' ', $line);
     $sum1 += extrapolate($seq);
     $sum2 += extrapolate(array_reverse($seq));
 }
 
-echo $sum1 . "\r\n";
-echo $sum2 . "\r\n";
+echo $sum1 . "\r\n" . $sum2 . "\r\n";
 
 function extrapolate(array $seq): int {
     $prods = [$seq];
 
-    do $prods[] = diff($prods[sizeof($prods) - 1]);
-    while (!is_zero($prods[sizeof($prods) - 1]));
+    do $prods[] = diff(end($prods));
+    while (!is_zero(end($prods)));
 
     $prods[array_key_last($prods)][] = 0;
 
