@@ -33,12 +33,11 @@ foreach($inputLines as $line) {
 }
 
 $nodes = [];
-$distances[$start_node['y']][$start_node['x']] = 0;
+$loop[$start_node['y']][$start_node['x']] = 0;
 
-set_distance($start_node, 0, $distances, $map, $pipes, $Y, $X);
-function set_distance($node, $distance, &$distances, &$map, &$pipes, $Y, $X)
-{
-    $distances[$node['y']][$node['x']] = $distance;
+set_distance($start_node, 0, $loop, $map, $pipes, $Y, $X);
+function set_distance($node, $distance, &$loop, &$map, &$pipes, $Y, $X) {
+    $loop[$node['y']][$node['x']] = $distance;
 
     foreach($node['pipes'] as $pipe) {
         $ny = $node['y'] + $pipe[0];
@@ -46,7 +45,7 @@ function set_distance($node, $distance, &$distances, &$map, &$pipes, $Y, $X)
 
         if ($nx < 0 || $ny < 0 || $nx === $X || $ny === $Y) continue;
         if (in_array($map[$ny][$nx], ['.', 'S'])) continue;
-        if (isset($distances[$ny][$nx]) && $distances[$ny][$nx] <= $distance + 1) continue;
+        if (isset($loop[$ny][$nx]) && $loop[$ny][$nx] <= $distance + 1) continue;
 
         $next_node = [
             'y' => $ny,
@@ -63,16 +62,16 @@ function set_distance($node, $distance, &$distances, &$map, &$pipes, $Y, $X)
         }
         if ($compatible === false) continue;
 
-        set_distance($next_node, $distance + 1, $distances, $map, $pipes, $Y, $X);
+        set_distance($next_node, $distance + 1, $loop, $map, $pipes, $Y, $X);
     }
 }
 
 $max_distance = 0;
 for($y = 0; $y < $Y; $y++) {
     for($x = 0; $x < $X; $x++) {
-        if (isset($distances[$y][$x])) {
-            echo str_pad($distances[$y][$x], 5, ' ', STR_PAD_LEFT);
-            $max_distance = max($max_distance, $distances[$y][$x]);
+        if (isset($loop[$y][$x])) {
+            echo str_pad($loop[$y][$x], 5, ' ', STR_PAD_LEFT);
+            $max_distance = max($max_distance, $loop[$y][$x]);
         } else {
             echo '    .';
         }
@@ -86,27 +85,24 @@ echo $max_distance . PHP_EOL . PHP_EOL;
 $new_map = [];
 for($y = 0; $y < $Y; $y++) {
     for ($x = 0; $x < $X; $x++) {
-        if (!isset($distances[$y][$x])) continue;
+        if (!isset($loop[$y][$x])) continue;
 
         $new_map[$y * 3 + 1][$x * 3 + 1] = '#';
-        foreach($pipes[$map[$y][$x]] as $dir) {
-            $cy = $y * 3 + 1 + $dir[0];
-            $cx = $x * 3 + 1 + $dir[1];
-            $new_map[$cy][$cx] = '#';
-        }
+
+        foreach($pipes[$map[$y][$x]] as $dir)
+            $new_map[$y * 3 + 1 + $dir[0]][$x * 3 + 1 + $dir[1]] = '#';
     }
 }
 
-$opens = [];
+$outside = [];
 $X3 = $X * 3;
 $Y3 = $Y * 3;
 
-check_open(0, 0, $new_map, $opens, $Y3, $X3);
-function check_open($y, $x, &$new_map, &$opens, $Y3, $X3) {
+check_tile(0, 0, $new_map, $outside, $Y3, $X3);
+function check_tile($y, $x, &$new_map, &$outside, $Y3, $X3) {
+    if (isset($outside[$y][$x]) || isset($new_map[$y][$x])) return;
 
-    if (isset($opens[$y][$x]) || isset($new_map[$y][$x])) return;
-
-    $opens[$y][$x] = true;
+    $outside[$y][$x] = true;
 
     foreach ([[-1,  0], [ 1, 0], [0, -1], [0, 1]] as $dir) {
         $cy = $y + $dir[0];
@@ -114,7 +110,7 @@ function check_open($y, $x, &$new_map, &$opens, $Y3, $X3) {
 
         if ($cx < 0 || $cy < 0 || $cx === $X3 || $cy === $Y3) continue;
 
-        check_open($cy, $cx, $new_map, $opens, $Y3, $X3);
+        check_tile($cy, $cx, $new_map, $outside, $Y3, $X3);
     }
 }
 
@@ -123,7 +119,7 @@ for($y = 0; $y < $Y3; $y++) {
     for($x = 0; $x < $X3; $x++) {
         if (isset($new_map[$y][$x])) {
             echo $new_map[$y][$x];
-        } elseif (isset($opens[$y][$x]) && $opens[$y][$x] === true) {
+        } elseif (isset($outside[$y][$x]) && $outside[$y][$x] === true) {
             echo 'O';
         } else {
             if ((($y - 1) % 3 === 0) && (($x - 1) % 3 === 0)) {
