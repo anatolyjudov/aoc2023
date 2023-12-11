@@ -4,19 +4,12 @@ $inputLines = file('input.txt', FILE_IGNORE_NEW_LINES);
 
 $galaxies = $void_lines = $void_cols = [];
 
-$y = -1;
-foreach ($inputLines as $line) {
-    $y++;
-
-    if (trim($line, '.') === '') {
+for ($y = 0; $y < sizeof($inputLines); $y++)
+    if (!str_contains($inputLines[$y], '#'))
         $void_lines[] = $y;
-        continue;
-    }
-
-    for($x = 0; $x < strlen($line); $x++)
-        if ($line[$x] !== '.')
+    else for($x = 0; $x < strlen($inputLines[$y]); $x++)
+        if ($inputLines[$y][$x] !== '.')
             $galaxies[] = [$y, $x];
-}
 
 $xs = array_column($galaxies, 1);
 
@@ -26,7 +19,7 @@ for($x = 0; $x < strlen($inputLines[0]); $x++)
 
 $sum1 = $sum10e6 = 0;
 
-for ($i = 0; $i < sizeof($galaxies) - 1; $i++) {
+for ($i = 0; $i < sizeof($galaxies) - 1; $i++)
     for ($ii = $i + 1; $ii < sizeof($galaxies); $ii++) {
         $y0 = min($galaxies[$i][0], $galaxies[$ii][0]);
         $y1 = max($galaxies[$i][0], $galaxies[$ii][0]);
@@ -44,7 +37,6 @@ for ($i = 0; $i < sizeof($galaxies) - 1; $i++) {
         $sum1 += $y1 - $y0 + $yv + $x1 - $x0 + $xv;
         $sum10e6 += $y1 - $y0 + $yv * 999999 + $x1 - $x0 + $xv * 999999;
     }
-}
 
 echo $sum1 . PHP_EOL;
 echo $sum10e6 . PHP_EOL;
