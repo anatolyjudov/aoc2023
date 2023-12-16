@@ -56,49 +56,29 @@ foreach($starting_beams as $starting_beam) {
 
             $tile = isset($mirrors[$next[0]][$next[1]]) ? $mirrors[$next[0]][$next[1]] : '.';
 
-            if ($beam[2] === RIGHT) {
-                if ($tile === '/') $next[2] = UP;
-                if ($tile === '\\') $next[2] = DOWN;
-                if ($tile === '.' || $tile === '-') $next[2] = RIGHT;
-                if ($tile === '|') {
-                    $next[2] = UP;
-                    $new_beam = $next;
-                    $new_beam[2] = DOWN;
-                    $beams[] = $new_beam;   
-                }
-            } else
-            if ($beam[2] === LEFT) {
-                if ($tile === '/') $next[2] = DOWN;
-                if ($tile === '\\') $next[2] = UP;
-                if ($tile === '.' || $tile === '-') $next[2] = LEFT;
-                if ($tile === '|') {
-                    $next[2] = UP;
-                    $new_beam = $next;
-                    $new_beam[2] = DOWN;
-                    $beams[] = $new_beam;
-                }
-            } else
-            if ($beam[2] === UP) {
-                if ($tile === '/') $next[2] = RIGHT;
-                if ($tile === '\\') $next[2] = LEFT;
-                if ($tile === '.' || $tile === '|') $next[2] = UP;
-                if ($tile === '-') {
-                    $next[2] = LEFT;
-                    $new_beam = $next;
-                    $new_beam[2] = RIGHT;
-                    $beams[] = $new_beam;
-                }
-            } else
-            if ($beam[2] === DOWN) {
-                if ($tile === '/') $next[2] = LEFT;
-                if ($tile === '\\') $next[2] = RIGHT;
-                if ($tile === '.' || $tile === '|') $next[2] = DOWN;
-                if ($tile === '-') {
-                    $next[2] = LEFT;
-                    $new_beam = $next;
-                    $new_beam[2] = RIGHT;
-                    $beams[] = $new_beam;
-                }
+            if ($tile === '/') {
+                $next[2] = match($beam[2]) {
+                    RIGHT => UP, LEFT => DOWN, UP => RIGHT, DOWN => LEFT,
+                };
+            } else if ($tile === '\\') {
+                $next[2] = match($beam[2]) {
+                    RIGHT => DOWN, LEFT => UP, UP => LEFT, DOWN => RIGHT,
+                };
+            } else if ($tile === '.'
+                || (($tile === '-') && in_array($beam[2], [LEFT, RIGHT]))
+                || (($tile === '|') && in_array($beam[2], [UP, DOWN]))
+                ) {
+                $next[2] = $beam[2];
+            } else if (($tile === '|') && in_array($beam[2], [LEFT, RIGHT])) {
+                $next[2] = UP;
+                $new_beam = $next;
+                $new_beam[2] = DOWN;
+                $beams[] = $new_beam;
+            } else if (($tile === '-') && in_array($beam[2], [UP, DOWN])) {
+                $next[2] = LEFT;
+                $new_beam = $next;
+                $new_beam[2] = RIGHT;
+                $beams[] = $new_beam;
             }
 
             $beams[$n] = $next;
@@ -110,6 +90,8 @@ foreach($starting_beams as $starting_beam) {
     for($y = 0; $y < $Y; $y++) for($x = 0; $x < $X; $x++) if (isset($energy[$y][$x])) $sum = empty($sum) ? 1 : $sum + 1;
 
     $max_energy = max($max_energy, $sum);
+
+    if ($starting_beam === [0, -1, RIGHT]) echo $sum . PHP_EOL;
 }
 
 echo $max_energy . PHP_EOL;
