@@ -1,4 +1,5 @@
 <?php
+// https://en.wikipedia.org/wiki/Shoelace_formula
 
 $inputLines = file('input.txt', FILE_IGNORE_NEW_LINES);
 
