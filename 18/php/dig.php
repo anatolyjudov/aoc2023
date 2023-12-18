@@ -38,21 +38,6 @@ foreach($trenches as $n => $trench) {
     }
 }
 
-// print
-/*
-for($y = 0; $y <= ($Ymax - $Ymin); $y++) {
-    for($x = 0; $x <= ($Xmax - $Xmin); $x++) {
-        if (!isset($grid[$y][$x])) {
-            echo '    .';
-            continue;
-        }
-        echo str_pad($grid[$y][$x], 5, ' ', STR_PAD_LEFT);
-    }    
-    echo PHP_EOL;
-}
-echo PHP_EOL;
-*/
-
 // count
 $sum = 0;
 for($y = 0; $y <= ($Ymax - $Ymin); $y++) {
@@ -89,19 +74,7 @@ for($y = 0; $y <= ($Ymax - $Ymin); $y++) {
             }
         }
 
-        /*
-        if (!isset($grid[$y][$x])) {
-            echo '    ' . ($in ? '*' : '.');
-            continue;
-        }
-        echo str_pad($grid[$y][$x], 5, ' ', STR_PAD_LEFT);
-        */
     }
-    //echo PHP_EOL;
 }
-//echo PHP_EOL;
 
 echo $sum . PHP_EOL;
-
-//print_r($trenches);
-//echo "$Ymin : $Ymax, $Xmin : $Xmax" . PHP_EOL;
