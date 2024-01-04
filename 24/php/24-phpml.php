@@ -1,6 +1,9 @@
 <?php
 
-//$range = [7, 27];
+use Phpml\Math\Matrix;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
 $range = [200000000000000, 400000000000000];
 $inputLines = file('input.txt', FILE_IGNORE_NEW_LINES);
 
@@ -35,41 +38,29 @@ function will_path_instersect($a, $b) {
     // y = y0 + ys * (x - x0) / xs
     // y * xs = y0 * xs + ys * x - ys * x0
     // y * xs - x * ys = y0 * xs - ys * x0
+    // -ys * x + xs * y = y0 * xs - ys * x0
+    // ys * x - xs * y = ys * x0 - y0 * xs
 
-    $A = [
+    $A = new Matrix([
         [$a[1][1], -1 * $a[1][0]],
         [$b[1][1], -1 * $b[1][0]],
-    ];
+    ]);
 
-    $B = [
+    $B = new Matrix([
         [$a[0][0] * $a[1][1] - $a[0][1] * $a[1][0]],
         [$b[0][0] * $b[1][1] - $b[0][1] * $b[1][0]],
-    ];
+    ]);
 
-    $det = $A[0][0] * $A[1][1] - $A[1][0] * $A[0][1];
-    if ($det === 0) {
-        // let's speculate we don't have hails with the same path
+    if ($A->getDeterminant() == 0) {
         return false;
     }
 
-    $Ar = [
-        [$A[1][1], -1 * $A[0][1]],
-        [-1 * $A[1][0], $A[0][0]],
+    $X = $A->inverse()->multiply($B)->getColumnValues(0);
+
+    $t = [
+        ($X[0] - $a[0][0]) / $a[1][0],
+        ($X[0] - $b[0][0]) / $b[1][0]
     ];
-
-    $X = [];
-    foreach($Ar as $row) {
-        $sum = 0;
-        for($i = 0; $i < sizeof($row); $i++) {
-            $sum += $row[$i] * $B[$i][0];
-        }
-        $X[] = $sum / $det;
-    }
-
-    // $t = (x - x0) / xs
-    $t = [];
-    $t[0] = ($X[0] - $a[0][0]) / $a[1][0];
-    $t[1] = ($X[0] - $b[0][0]) / $b[1][0];
 
     $X[] = $t;
 
