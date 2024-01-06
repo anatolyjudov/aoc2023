@@ -35,7 +35,6 @@ function get_longest($length, $current, $seen) {
         return $length;
     }
 
-    $options = [[1, 0], [-1, 0], [0, 1], [0, -1]];
     if (in_array($grid[$y][$x], ['<', '>', '^', 'v'])) {
         $options = [$tiles[$grid[$y][$x]]];
     } else {
