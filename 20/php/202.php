@@ -32,13 +32,9 @@ foreach($inputLines as $line) {
 }
 
 function reset_state() {
-    global $modules, $state, $pulse_history;
+    global $modules, $state;
 
     foreach($modules as $id => $m) {
-        $pulse_history[$id] = [
-            LOW_PULSE => 0,
-            HIGH_PULSE => 0
-        ];
 
         if (!isset($m['type'])) {
             continue;
@@ -57,8 +53,15 @@ function reset_state() {
     }
 }
 
-function push($current_push): array {
-    global $state, $modules, $pulse_history;
+reset_state();
+
+$feed = 'hb';
+
+$pushes = 0;
+$cycles = [];
+while(true) {
+
+    $pushes++;
 
     $pulses = [['broadcaster', LOW_PULSE, null]];
     $total = [LOW_PULSE => 0, HIGH_PULSE => 0];
@@ -72,6 +75,22 @@ function push($current_push): array {
         $total[$pulse] += 1;
 
         $output_pulse = false;
+
+        if (($id === $feed) && ($pulse === HIGH_PULSE)) {
+            echo $from . ' ';
+            if (!isset($pulse_history[$from])) {
+                $cycles[$from] = $pushes;
+
+                print_r($cycles);
+
+                if (sizeof($cycles) === 4) {
+                    print_r($cycles);
+                    $cycles = array_values($cycles);
+                    echo (int)gmp_lcm($cycles[0], gmp_lcm($cycles[1], gmp_lcm($cycles[2], $cycles[3]))) . PHP_EOL;
+                    die();
+                }
+            }
+        }
 
         if (!isset($modules[$id]['type'])) {
             // untyped module
@@ -98,25 +117,6 @@ function push($current_push): array {
             foreach($modules[$id]['dests'] as $dest) {
                 array_push($pulses, [$dest, $output_pulse, $id]);
             }
-
-            $pulse_history[$id][$output_pulse]++;
         }
     }
-
-    return $total;
 }
-
-reset_state();
-
-$total = [
-    LOW_PULSE => 0,
-    HIGH_PULSE => 0
-];
-
-for($i = 0; $i < 1000; $i++) {
-    $pulses = push($i);
-    $total[LOW_PULSE] += $pulses[LOW_PULSE];
-    $total[HIGH_PULSE] += $pulses[HIGH_PULSE];
-}
-
-echo "Part 1: " . $total[LOW_PULSE] * $total[HIGH_PULSE] . PHP_EOL;
